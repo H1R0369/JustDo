@@ -1,0 +1,22 @@
+/* ==================== GLOBAL STYLES ==================== */
+
+html, body {
+    height: 100%;
+}
+
+body {
+    /* font-family: var(--font-family);
+    font-weight: var(--font-weight-normal);
+    color: var(--color-primary); */
+    background-color: var(--color-black);
+}
+
+/* ==================== COMPONENTS ==================== */
+
+
+
+/* ==================== SECTIONS ==================== */
+
+
+
+/* ---------- Navigation ---------- */
