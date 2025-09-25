@@ -1,99 +1,63 @@
 :root {
+    /* FONT SIZE */
+    --text-sm: 1.2rem;
+    --text-base: 1.6rem;
+    --text-paragraph: 2rem;
+    --text-h5: 2.4rem;
+    --text-h4: 3.2em;
+    --text-h3: 4rem;
+    --text-h2: 4.8rem;
+    --text-h1: 6.2rem;
+
+    /* FONT WEIGHT */
+    --font-weight-normal: 400;
+    --font-weight-bold: 700;
+
+    /* LINE HEIGHT */
+    --line-height-tight: 1.2;
+    --line-height-normal: 1.5;
+
+    /* LETTER SPACING */
+    --letter-spacing-tight: -2px;
 
     /* FONT FAMILY */
-    --font-family: "Barriecito", 'Poppins', sans-serif;
+    --font-family: "Montserrat", sans-serif;
 
-    /* FONT SIZE */
-        /* Small text */
-        --text-xs: 1rem;      /* Extra small, captions */
-        --text-sm: 1.2rem;    /* Small body text */
-        --text-base: 1.6rem;  /* Base body text */
-        --text-lg: 2rem;      /* Slightly larger body text */
-        
-        /* Paragraph / section text */
-        --text-paragraph: 2.4rem;
-        
-        /* Headings */
-        --text-h6: 3rem;
-        --text-h5: 3.6rem;
-        --text-h4: 4.8rem;
-        --text-h3: 6rem;
-        --text-h2: 7.2rem;
-        --text-h1: 9rem;
+    /* COLORS */
+    --primary-base: black;
+    --primary-tint: #d0ebff;
+    --primary-shade: #1c7ed6;
 
-        /* Display sizes */
-        --text-display-sm: 12rem;
-        --text-display-md: 16rem;
-        --text-display-lg: 24rem;
-        --text-display-xl: 36rem;
-        --text-display-xxl: 48rem;
-        --text-display-xxxl: 72rem;
+    --secondary-base: white;
+    --secondary-tint: #efdbff;
+    --secondary-shade: #7048e8;
 
-        /* Ultra-large (for banners, hero sections, experimental use) */
-        --text-mega: 96rem;
-        --text-giga: 120rem;
+    --tertiary-base: #ff922b;
+    --tertiary-tint: #ffe8cc;
+    --tertiary-shade: #f78707;
 
-    /* FONT WEIGHTS */
-    --font-weight-light: 300;
-    --font-weight-normal: 400;
-    --font-weight-medium: 500;
-    --font-weight-semibold: 600;
-    --font-weight-bold: 700;
-    --font-weight-black: 900;
+    --grey-base: #495057;
+    --grey-tint: #f1f3f5;
+    --grey-shade: #212529;
 
-    /* LINE HEIGHTS (mobile first) */
-    --line-height-tight: 1.1;   /* Headings */
-    --line-height-snug: 1.3;    /* Subheadings */
-    --line-height-normal: 1.5;  /* Body */
-    --line-height-relaxed: 1.7; /* Paragraphs */
-    --line-height-loose: 2;     /* Longform text */
-
-    /* LETTER SPACING (mobile first) */
-    --tracking-tighter: -0.05em;
-    --tracking-tight: -0.025em;
-    --tracking-normal: 0em;
-    --tracking-wide: 0.025em;
-    --tracking-wider: 0.05em;
-    --tracking-widest: 0.1em;
-
-    /* COLOR TOKENS */
-        /* Brand colors */
-        --color-primary: #BBE1FA;   /* Blue */
-        --color-primary-light: #a0abb8;
-        --color-primary-dark: #07121f;
-
-        --color-secondary: #0F4C75; /* Light Blue */
-        --color-secondary-light: #9fb9d7;
-        --color-secondary-dark: #203958;
-
-        /* Neutral / Grayscale */
-        --color-black: #000000;
-        --color-white: #ffffff;
-        --color-gray-100: #f3f4f6;
-        --color-gray-200: #e5e7eb;
-        --color-gray-400: #9ca3af;
-        --color-gray-600: #4b5563;
-        --color-gray-800: #1f2937;
-        --color-gray-900: #111827;
-
-        /* Feedback */
-        --color-success: #16a34a;  /* Green */
-        --color-warning: #f59e0b;  /* Yellow/Amber */
-        --color-danger:  #dc2626;  /* Red */
-        --color-info:    #0ea5e9;  /* Sky Blue */
+    /* MISC */
+    --nav-height: 100px;
 }
 
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    font-family: var(--font-family);
-    font-size: var(--text-base);
-    color: var(--color-primary);
 }
 
 html {
     font-size: 62.5%;
+}
+
+body {
+    font-family: var(--font-family);
+    font-size: var(--text-base);
+    color: var(--primary-base);
 }
 
 h1 {
@@ -120,26 +84,9 @@ h6 {
     font-size: var(--text-h6);
 }
 
-a, button, label {
-
-}
-
-a, button, input, textarea {
-    color: var(--color-primary);
-}
-
-button, input, textarea {
-    
-}
-
 a {
-    display: inline-block;
+    color: var(--primary-base);
     text-decoration: none;
-}
-
-label, input, textarea {
-    display: block;
-    text-align: center;
 }
 
 p {

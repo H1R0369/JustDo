@@ -1,0 +1,31 @@
+{
+  "name": "justdo",
+  "version": "1.0.0",
+  "description": "Easily add and organize tasks, set priorities, and keep track of everything with calendar views. Built to help you see both the details and the bigger picture.",
+  "keywords": [
+    "to-do",
+    "task-manager"
+  ],
+  "homepage": "https://github.com/H1R0369/JustDo#readme",
+  "bugs": {
+    "url": "https://github.com/H1R0369/JustDo/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/H1R0369/JustDo.git"
+  },
+  "license": "ISC",
+  "author": "Hiro",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "axios": "^1.12.2",
+    "ejs": "^3.1.10",
+    "express": "^5.1.0",
+    "nodemon": "^3.1.10",
+    "uuid": "^13.0.0"
+  }
+}
