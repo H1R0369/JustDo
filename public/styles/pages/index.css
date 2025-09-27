@@ -1,8 +1,7 @@
 /* ==================== GLOBAL STYLES ==================== */
 
-.main-container {
-    display: flex;
-    flex-direction: column;
+body {
+    user-select: none;
 }
 
 /* ==================== SECTIONS ==================== */
@@ -10,7 +9,6 @@
 /* ========== HEADER ========== */
 
 header {
-    height: 25vh;
     padding: 1rem;
 }
 
@@ -38,9 +36,10 @@ header {
     inset-block-start: 0;
     inset-inline: 0;
     width: 100%;
-    padding: 1rem;
+    padding: 1.5rem;
     transform: translate(0, -100%);
     background-color: var(--primary-base);
+    z-index: 998;
 }
 
 .nav-curtain-links {
@@ -59,6 +58,33 @@ header {
     color: white;
 }
 
+/* ========== SCROLL NAVIGATION ========== */
+
+#nav-slider {
+    position: relative;
+    width: 100%;
+    margin: 1.5rem auto 18vh auto;
+    background-color: gray;
+}
+
+#nav-slider-container {
+    overflow-x: visible;
+    height: min-content;
+    background-color: blue;
+}
+
+.nav-slide {
+    display: inline-block;
+    position: absolute;
+    left: 50%;
+    padding: 0.5rem;
+    transform: translate(-50%, -50%);
+    border-radius: 3rem;
+    font-size: 1rem;
+    background-color: lightgray;
+    box-shadow: 0 1px 3px #8B8589;
+}
+
 /* ========== MAIN ========== */
 
 main {
@@ -67,30 +93,41 @@ main {
     gap: 0.5rem;
     height: 50vh;
     padding: 1rem;
+    margin-inline: 5rem;
 }
 
-.add-task-btn {
+.add-task-link {
     display: block;
     width: 100%;
     padding: 0.5rem;
-    border: 3px solid gray;
+    border: none;
     border-radius: 1rem;
     text-align: center;
     color: var(--secondary-base);
     background-color: var(--primary-base);
+    box-shadow: 0px 1px 3px #8B8589;
 }
 
 /* ---------- Task Container ---------- */
 
+.task-management-links-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0.5rem;
+}
+
 .task-container {
-    place-content: center;
+    place-content: start;
     height: 40vh;
-    border: 3px solid gray;
+    padding-top: 3rem;
+    border: none;
     border-radius: 1.5rem;
     overflow: scroll;
     scrollbar-width: none;
     background-color: var(--primary-base);
     color: white;
+    box-shadow: 0px 1px 5px #8B8589;
 }
 
 .task-list {
@@ -102,10 +139,44 @@ main {
     text-align: center;
 }
 
-.task-list li {
+.task-li {
+    position: relative;
     padding: 0.2rem;
     border-radius: 0.5rem;
     background-color: var(--secondary-base);
+}
+
+.finished-task-li {
+    position: relative;
+    height: 1.5rem;
+    padding: 0.2rem;
+    border-radius: 0.5rem;
+    text-align: center;
+    text-decoration: line-through;
+    font-size: 1rem;
+    opacity: 0.5;
+    background-color: #8B8589;
+}
+
+.tickbox {
+    position: absolute;
+    left: 5px;
+    top: 50%;
+    transform: translate(0, -50%);
+}
+
+.delete-icon-small {
+    position: absolute;
+    right: 5px;
+    top: 50%;
+    transform: translate(0, -50%);
+}
+
+.delete-icon-tiny {
+    position: absolute;
+    right: 5px;
+    top: 50%;
+    transform: translate(0, -50%);
 }
 
 .task-inp {
@@ -113,6 +184,8 @@ main {
     width: 100%;
     border: none;
     border-radius: 0.5rem;
+    font-family: var(--font-family);
+    font-size: var(--text-paragraph);
     text-align: center;
     background-color: var(--secondary-base);
 }

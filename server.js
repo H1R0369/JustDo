@@ -1,53 +1,45 @@
 import express from 'express';
-import axios from 'axios';
-import {v4} from 'uuid';
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const app = express();
 const port = 3000;
 
 app.use(express.urlencoded({extended: true}));
 app.use(express.json());    
-app.set('view engine', 'ejs');
 app.use(express.static('public'));
 
 let tasks = [
     {
-        id: v4(),
+        id: crypto.randomUUID(),
         text: 'hello'
+    },
+    {
+        id: crypto.randomUUID(),
+        text: 'bye'
     }
 ];
 
+let finishedTasks = [];
+
 app.get('/', (req, res) => {
-    res.render('index', {tasks});
+  res.sendFile(path.join(__dirname, 'public', 'pages', 'index.html'));
 });
 
-app.post('/tasks', (req, res) => {
-    const id = req.body.taskID;
-    const text = req.body.task;
+app.get('/tasks', (req, res) => {
+    res.status(200).json({tasks, finishedTasks});
+});
 
-    if (id) {
-        const taskIdx = tasks.findIndex(t => t.id === id);
-        tasks[taskIdx].text = text
-    } else {
-        const newTask = {
-            id,
-            text
-        }
-        tasks.unshift(newTask);
-    }
-
-    res.redirect('/');
-})
-
-app.post('/tasks/new', (req, res) => {
-    tasks.push({
-        id: v4(),
-        text: 'Untitled'
-    })
-
-    res.redirect('/');
+app.post('/save', (req, res) => {
+    const taskArr = req.body.tasks;
+    const finishedTaskArr = req.body.finishedTasks;
+    tasks = taskArr;
+    finishedTasks = finishedTaskArr;
 })
 
 app.listen(port, () => {
     console.log("App listening at port", port);
-})
+});
