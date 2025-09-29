@@ -1,18 +1,126 @@
+import {setupPermanantListeners} from './index.js';
+import NavigationSlider from './nav-slider.js';
+
 export const gs = {
+    extryPlaying: true,
+    navSlider: undefined,
 
-    attachPermanantAnimations() {
+    setupEntry() {
+        const logoName = document.querySelector('#logo-name');
+        const logoIcon = document.querySelector('#logo-icon');
+        gsap.set(logoName, {y: -100});
+        gsap.set(logoIcon, {scale: 0});
 
-        console.log('GSAP Initialized')
+        const burgerAnc = document.querySelector('#burger-link');
+        gsap.set(burgerAnc, {opacity: 0});
 
-        const burgerAnc = document.querySelector('.burger-anc');
-        const burgerSvg = document.querySelector('.burger-anc path')
-        const curtainNav = document.querySelector('.nav-curtain');
-        const popEls = document.querySelectorAll('.gsap-pop');
+        const tasksSlide = document.querySelector('#tasks-slide');
+        const calendarSlide = document.querySelector('#calendar-slide');
+        gsap.set(tasksSlide, {
+            scale: 0,
+            transform: 'translate(-50%, 0)'
+        });
+        gsap.set(calendarSlide, {
+            scale: 0,
+            transform: 'translate(70%, 0)'
+        });
 
-        // Handle Curtain Menu
+        const taskContainer = document.querySelector('#task-container');
+        const addTaskLink = document.querySelector('#add-task-link');
+        const tasks = document.querySelectorAll('.task-li');
+        const deleteIconLarge = document.querySelector('#delete-icon-large');
+        gsap.set(taskContainer, {scaleY: 0});
+        gsap.set(addTaskLink, {x: -1000});
+        gsap.set(tasks, {x: 1000});
+        gsap.set(deleteIconLarge, {scale: 0});
+
+        const tasksContentSlide = document.querySelector('#tasks-content-slide');
+        const calendarContentSlide = document.querySelector('#calendar-content-slide');
+
+        gsap.set(tasksContentSlide, {
+            transform: 'translate(-50%, 0)'
+        })
+        gsap.set(calendarContentSlide, {
+            transform: 'translate(50%, 0)'
+        })
+
+    },
+    
+    async playEntry() {
+        const logo = this.playLogoEntry();
+        const burger = this.playBurgerEntry();
+        const slides = this.playSlidesEntry();
+        const tasks = this.playTasksEntry();
+        
+        const tl = gsap.timeline()
+            .add(logo)
+            .add(burger, '>-0.5')
+            .add(slides)
+            .add(tasks, '>-0.3')
+
+        tl.eventCallback('onComplete', () => {
+            setupPermanantListeners();
+            this.setupPermanantAnimations();
+            this.entryPlaying = false;
+        });
+    },
+
+    playLogoEntry() {
+        const logoName = document.querySelector('#logo-name');
+        const logoIcon = document.querySelector('#logo-icon');
+
+        return gsap.timeline()
+            .to(logoName, {
+                y: 0
+            })
+            .to(logoIcon, {
+                scale: 1
+            })
+    },
+
+    playBurgerEntry() {
+        const burgerAnc = document.querySelector('#burger-link');
+        return gsap.to(burgerAnc, {opacity: 1});
+    },
+
+    playSlidesEntry() {
+        const taskSlide = document.querySelector('#tasks-slide');
+        const calendarSlide = document.querySelector('#calendar-slide');
+
+        return gsap.timeline()
+            .to(taskSlide, {
+                scale: 1.3,
+                opacity: 1,
+                zIndex: 2
+            })
+            .to(calendarSlide, {
+                scale: 1,
+            }, '>-0.3')
+    },
+
+    playTasksEntry() {
+        const taskContainer = document.querySelector('#task-container');
+        const addTaskLink = document.querySelector('#add-task-link');
+        const tasks = document.querySelectorAll('.task-li');
+        const deleteIconLarge = document.querySelector('#delete-icon-large');
+        
+        return gsap.timeline()
+            .to(taskContainer, {scaleY: 1})
+            .to(addTaskLink, {x: 0})
+            .to(tasks, {x: 0, stagger: 0.1}, '>-0.3')
+            .to(deleteIconLarge, {scale: 1})
+    },
+
+    setupPermanantAnimations() {
+
+        console.log('Permanant animations attached')
+
+        const burgerLink = document.querySelector('#burger-link');
+        const burgerSvg = document.querySelector('#burger-link path');
+        const curtainNav = document.querySelector('#nav-curtain');
 
         let isMenuDown = false;
-        burgerAnc.addEventListener('click', () => {
+        burgerLink.addEventListener('click', () => {
             gsap.to(curtainNav, {
                 y: isMenuDown ? '-100%' : '0%',
                 ease: 'power1.inOut'
@@ -50,7 +158,7 @@ export const gs = {
 
     },
 
-    bubble(el, maxScale, duration=1) {
+    bubble(el, maxScale, duration=0.5) {
 
         const tw = gsap.fromTo(el, {
                 scale: 1
@@ -69,27 +177,14 @@ export const gs = {
         })
     },
 
-    setupSlides(slides, positions) {
-        const tasks = slides[0];
-        const calendar = slides[1];
-
-        gsap.set(tasks, {
-            transform: 'translate(-50%, 0)',
-        });
-        gsap.set(calendar, {
-            transform: 'translate(50%, 0)'
-        });
-        this.centerSlide(tasks, slides, positions);
-    },
-
     centerSlide(slide, slides, positions) {
         if (!(slide.classList.contains('active'))) {
+
+            this.navSlider.isSliding = true;
             const slideIdx = slides.findIndex(s => s === slide);
             const slideLeft = slides[slideIdx - 1];
             const slideRight = slides[slideIdx + 1];
-            // console.log('slide-left', slideLeft);
-            // console.log('slide-right\n', slideRight);
-
+            
             slides.forEach(s => {
                 s.classList.remove('active');
             });
@@ -99,29 +194,34 @@ export const gs = {
                 gsap.killTweensOf(s);
             })
 
-            gsap.to(slides.filter(s => s !== slide), {
+            const tl = gsap.timeline();
+
+            tl.to(slides.filter(s => s !== slide), {
                 zIndex: 0,
-                opacity: 0.5
+                opacity: 0.5,
             })
             
-            gsap.to(slide, {
+            tl.to(slide, {
                 transform: 'translate(-50%, 0)',
                 scale: 1.3,
                 opacity: 1,
                 zIndex: 2
-            })
+            }, '<')
 
             if (slideLeft) {
-                gsap.to(slideLeft, {
-                    transform: `translate(${positions[slideLeft.id].left}, 0)`
-                })
+                tl.to(slideLeft, {
+                    transform: `translate(${positions[slideLeft.id].left}, 0)`,
+                }, '<')
             }
 
             if (slideRight) {
-                gsap.to(slideRight, {
+                tl.to(slideRight, {
                     transform: `translate(${positions[slideRight.id].right}, 0)`
-                })
+                }, '<')
             }
+
+            tl.eventCallback('onComplete', () => this.navSlider.isSliding = false);
+            tl.eventCallback('onUpdate', () => console.log(this.navSlider.isSliding))
         }
 
     },
@@ -131,9 +231,6 @@ export const gs = {
         const slideIdx = slides.findIndex(s => s === activeSlide);
         const slideLeft = slides[slideIdx - 1];
         const slideRight = slides[slideIdx + 1];
-        console.log('slide-left', slideLeft);
-        console.log('slide-right\n', slideRight);
-
         
         if (diff > 0) {
             if (slideLeft) {
@@ -144,8 +241,14 @@ export const gs = {
                 this.centerSlide(slideRight, slides, positions);
             }
         }
+    },
+
+    centerContent(content, contents, positions) {
+
     }
 }
 
-
+window.addEventListener('load', () => {
+    gs.navSlider = new NavigationSlider('nav-slider-container');
+});
 

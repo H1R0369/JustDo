@@ -1,19 +1,17 @@
-import {gs} from './index-gsap.js';
+import { gs } from './index-gsap.js';
 
-const taskListEl = document.querySelector('.task-list');
-const addTaskLinkEl = document.querySelector('.add-task-link');
-const deleteIconLarge = document.querySelector('.delete-icon-large');
+const taskListEl = document.querySelector('#task-list');
+const addTaskLinkEl = document.querySelector('#add-task-link');
+const deleteIconLarge = document.querySelector('#delete-icon-large');
 const taskArr = [];
 const finishedTaskArr = [];
 
 async function init() {
     await loadTasks();
-    renderTasks();
-    gs.attachPermanantAnimations();
+    await renderTasks();
 };
 
 async function renderTasks() {
-    console.log(taskArr)
 
     let taskHtmls = '';
     taskArr.forEach(task => {
@@ -25,7 +23,8 @@ async function renderTasks() {
     });
 
     taskListEl.innerHTML = taskHtmls;
-    attachEventListeners();
+    stopPreviousTweens();
+    setupEventListeners();
 };
 
 async function loadTasks() {
@@ -48,6 +47,25 @@ async function saveTasks() {
     }
 };
 
+function setupElements() {
+    const taskSlides = document.querySelectorAll('.nav-slide');
+    taskSlides.forEach(s => {
+        const st = s.style;
+        switch (s.id) {
+            case 'tasks-slide':
+                st.transform = 'translate(-50%, 0)';
+                st.scale = '1.3';
+                st.opacity = 1;
+                st.zIndex = -1;
+                break;
+            
+            case 'calendar-slide':
+                st.transform = 'translate(50%, 0)'
+                break;
+        }
+    })
+};
+
 function generateTaskHtml(task) {
     return `
         <li class="task-li" data-id="${task.id}">
@@ -61,7 +79,8 @@ function generateTaskHtml(task) {
             >
             <input 
                 class="task-inp" 
-                type="text" name="task" 
+                type="text" 
+                name="task" 
                 placeholder="Untitled" 
                 value="${task.text}"
                 data-id="${task.id}"
@@ -107,12 +126,13 @@ function generateFinishedTaskHtml(task) {
     `
 }
 
-function attachEventListeners() {
-    const taskInpEls = Array.from(document.querySelectorAll('.task-inp'));
-    const tickboxEls = document.querySelectorAll('.tickbox');
-    const deleteIconSmall = document.querySelectorAll('.delete-icon-small');
-    const deleteIconTiny = document.querySelectorAll('.delete-icon-tiny');
+function stopPreviousTweens() {
+    deleteIconLarge.setAttribute('data-state', 'none');
+}
+
+function setupEventListeners() {
     
+    const taskInpEls = Array.from(document.querySelectorAll('.task-inp'));
     taskInpEls.forEach((inp, idx) => {
         inp.addEventListener('change', () => {
             const taskIdx = taskArr.findIndex(t => t.id === inp.dataset.id);
@@ -129,9 +149,12 @@ function attachEventListeners() {
         })
     });
 
+    const tickboxEls = document.querySelectorAll('.tickbox');
     tickboxEls.forEach(box => {
         gs.pop(box, box.dataset.popScale);
         box.addEventListener('click', () => {
+
+            
 
             const taskIdx = taskArr.findIndex(t => t.id === box.dataset.id);
             const task = taskArr[taskIdx]
@@ -146,10 +169,6 @@ function attachEventListeners() {
                 } else {
                     taskArr.splice(taskIdx, 1);
                 };
-                saveTasks();
-                setTimeout(() => {
-                    renderTasks();
-                }, 200);
 
             } else {
                 const taskIdx = finishedTaskArr.findIndex(t => t.id === box.dataset.id);
@@ -158,16 +177,17 @@ function attachEventListeners() {
 
                 const removedTaskArr = finishedTaskArr.splice(taskIdx, 1);
                 taskArr.unshift(removedTaskArr[0]);
-
-                saveTasks();
-                setTimeout(() => {
-                    renderTasks();
-                }, 200);
             }
+            saveTasks();
+            setTimeout(() => {
+                renderTasks();
+            }, 200);
+
             box.setAttribute('data-state', box.dataset.state === 'false' ? 'true' : 'false');
         })
     });
 
+    const deleteIconSmall = document.querySelectorAll('.delete-icon-small');
     deleteIconSmall.forEach(icon => {
         gs.pop(icon, icon.dataset.popScale);
         icon.addEventListener('click', (e) => {
@@ -189,6 +209,7 @@ function attachEventListeners() {
         })     
     });
 
+    const deleteIconTiny = document.querySelectorAll('.delete-icon-tiny');
     deleteIconTiny.forEach(icon => {
         gs.pop(icon, icon.dataset.popScale)
         icon.addEventListener('click', () => {
@@ -208,79 +229,86 @@ function attachEventListeners() {
             }
         })
     })
-}
+};
 
-addTaskLinkEl.addEventListener('click', (req, res) => {
-    gs.pop(addTaskLinkEl, addTaskLinkEl.dataset.popScale, undefined, false);
-    const newTask = {
-        id: crypto.randomUUID(),
-        text: ''
-    }
-    taskArr.unshift(newTask);
-    renderTasks();
-    saveTasks();
-})
-
-deleteIconLarge.addEventListener('click', () => {
-
-    if (deleteIconLarge.dataset.state === 'none') {
-        gs.bubble(deleteIconLarge, deleteIconLarge.dataset.bubbleScale);
-    }
-
-
-    deleteIconLarge.setAttribute('data-state', deleteIconLarge.dataset.state === 'none' ? 'active' : 'none');
-
-    const taskEls = taskListEl.querySelectorAll('.task-li');
-    taskEls.forEach(li => {
-        const deleteIconSmall = li.querySelector('.delete-icon-small');
-        
-        switch (deleteIconSmall.dataset.state) {
-            
-            case 'trash':
-                deleteIconSmall.setAttribute('src', '../assets/svg/checkbox-delete-false.svg');
-                deleteIconSmall.dataset.state = 'false';    
-                break;
-            case 'false':
-                deleteIconSmall.setAttribute('src', '../assets/svg/trash-can.svg');
-                deleteIconSmall.dataset.state = 'trash';    
-                break;
-            case 'true':
-                const taskIdx = taskArr.findIndex(t => t.id === li.dataset.id);
-                taskArr.splice(taskIdx, 1);
-                deleteIconSmall.dataset.state = 'trash';
-                break;
+export function setupPermanantListeners() {
+    console.log('Permanant listeners attached')
+    addTaskLinkEl.addEventListener('click', (req, res) => {
+        gs.pop(addTaskLinkEl, addTaskLinkEl.dataset.popScale, undefined, false);
+        const newTask = {
+            id: crypto.randomUUID(),
+            text: ''
         }
-    });
-
-    const finishedTaskEls = taskListEl.querySelectorAll('.finished-task-li');
-    finishedTaskEls.forEach(li => {
-        const deleteIconTiny = li.querySelector('.delete-icon-tiny');
-
-        switch (deleteIconTiny.dataset.state) {
-            
-            case 'trash':
-                deleteIconTiny.setAttribute('src', '../assets/svg/checkbox-delete-false.svg');
-                deleteIconTiny.dataset.state = 'false';    
-                break;
-            case 'false':
-                deleteIconTiny.setAttribute('src', '../assets/svg/trash-can.svg');
-                deleteIconTiny.dataset.state = 'trash';    
-                break;
-            case 'true':
-                const taskIdx = finishedTaskArr.findIndex(t => t.id === li.dataset.id);
-                finishedTaskArr.splice(taskIdx, 1);
-                deleteIconTiny.dataset.state = 'trash';
-                break;
-        }
+        taskArr.unshift(newTask);
+        saveTasks();
+        renderTasks();
     })
 
-    if (deleteIconLarge.dataset.state === 'none') {
-        saveTasks();
-        setTimeout(() => {
-            renderTasks();
-        }, 200);
-    }
+    deleteIconLarge.addEventListener('click', () => {
 
+        if (deleteIconLarge.dataset.state === 'none') {
+            gs.bubble(deleteIconLarge, deleteIconLarge.dataset.bubbleScale);
+        }
+
+        deleteIconLarge.setAttribute('data-state', deleteIconLarge.dataset.state === 'none' ? 'active' : 'none');
+
+        const taskEls = taskListEl.querySelectorAll('.task-li');
+        taskEls.forEach(li => {
+            const deleteIconSmall = li.querySelector('.delete-icon-small');
+            
+            switch (deleteIconSmall.dataset.state) {
+                
+                case 'trash':
+                    deleteIconSmall.setAttribute('src', '../assets/svg/checkbox-delete-false.svg');
+                    deleteIconSmall.dataset.state = 'false';    
+                    break;
+                case 'false':
+                    deleteIconSmall.setAttribute('src', '../assets/svg/trash-can.svg');
+                    deleteIconSmall.dataset.state = 'trash';    
+                    break;
+                case 'true':
+                    const taskIdx = taskArr.findIndex(t => t.id === li.dataset.id);
+                    taskArr.splice(taskIdx, 1);
+                    deleteIconSmall.dataset.state = 'trash';
+                    break;
+            }
+        });
+
+        const finishedTaskEls = taskListEl.querySelectorAll('.finished-task-li');
+        finishedTaskEls.forEach(li => {
+            const deleteIconTiny = li.querySelector('.delete-icon-tiny');
+
+            switch (deleteIconTiny.dataset.state) {
+                
+                case 'trash':
+                    deleteIconTiny.setAttribute('src', '../assets/svg/checkbox-delete-false.svg');
+                    deleteIconTiny.dataset.state = 'false';    
+                    break;
+                case 'false':
+                    deleteIconTiny.setAttribute('src', '../assets/svg/trash-can.svg');
+                    deleteIconTiny.dataset.state = 'trash';    
+                    break;
+                case 'true':
+                    const taskIdx = finishedTaskArr.findIndex(t => t.id === li.dataset.id);
+                    finishedTaskArr.splice(taskIdx, 1);
+                    deleteIconTiny.dataset.state = 'trash';
+                    break;
+            }
+        })
+
+        if (deleteIconLarge.dataset.state === 'none') {
+            saveTasks();
+            setTimeout(() => {
+                renderTasks();
+            }, 200);
+        }
+
+    })
+};
+
+window.addEventListener('load', async () => {
+    await init();
+    gs.setupEntry();
+    gs.playEntry();
+    document.body.style.visibility = 'visible';
 })
-
-init();

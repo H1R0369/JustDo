@@ -1,23 +1,24 @@
 import { gs } from './index-gsap.js';
-
 class NavigationSlider {
 
     constructor(containerID) {
         this.slider = document.getElementById(containerID);
         this.slides = Array.from(this.slider.querySelectorAll('.nav-slide'));
         this.currentIdx = 0;
+        this.isSliding = false;
         this.init();
     }
 
     init() {
         this.setupEventListeners();
-        gs.setupSlides(this.slides, this.getPositions());
     }
 
     setupEventListeners() {
         this.slides.forEach((slide, index) => {
             slide.addEventListener('click', () => {
-                this.centerSlide(slide);
+                if (!this.isSliding) {
+                    this.centerSlide(slide);
+                }
             })
         });
 
@@ -30,29 +31,45 @@ class NavigationSlider {
 
         this.slider.addEventListener("touchend", (e) => {
             endX = e.changedTouches[0].clientX;
-            handleSwipe(this.slides, this.getPositions());
+            handleSwipe(this.slides, this.getPositions(), this.isSliding);
         });
 
-        function handleSwipe(slides, positions) {
+        function handleSwipe(slides, positions, isSliding) {
         const diff = endX - startX;
 
             if (Math.abs(diff) > 10) { 
-                gs.slide(slides, diff, positions);
+                if (!isSliding) {
+                    gs.slide(slides, diff, positions);
+                }
             }
         }
     }
 
     centerSlide(slide) {
-
         gs.centerSlide(slide, this.slides, this.getPositions());
     }
 
     getPositions() {
         return {
-            tasks: {left: '-210%', right: '20%'},
-            calendar: {left: '-150%', right: '50%'}
-        };
-    }
+            'tasks-slide': {
+                left: '-210%', 
+                right: '20%', 
+                // leftRotateX: '-10deg', 
+                // rightRotateX: '0deg',
+                // leftRotateY: '-20deg', 
+                // rightRotateY: '20deg', 
+            },
+
+            'calendar-slide': {
+                left: '-150%', 
+                right: '50%', 
+                // leftRotateX: '0deg', 
+                // rightRotateX: '0deg',
+                // leftRotateY: '-20deg', 
+                // rightRotateY: '20deg', 
+            }    
+        }
+    };
 }
 
-const navSlider = new NavigationSlider('nav-slider-container');
+export default NavigationSlider;
